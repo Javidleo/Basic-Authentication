@@ -1,8 +1,15 @@
 
+using BasicAuthentication.Domain;
 using BasicAuthentication.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// adding password service for regex security.
+builder.Services.AddScoped<PasswordService>();
+
 
 // Add services to the container.
 
