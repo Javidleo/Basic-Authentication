@@ -1,4 +1,7 @@
 
+using BasicAuthentication.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -10,7 +13,10 @@ builder.Services.AddSwaggerGen();
 
 #region New Services
 
-
+builder.Services.AddDbContext<AppDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection"));
+});
 #endregion
 
 var app = builder.Build();
