@@ -24,9 +24,16 @@ public class UserController : ControllerBase
             return BadRequest("Password is weak, it must be at least 8 characters, include numbers and special characters!");
         }
 
-        if(dto.Password.Length <= 8)
+        if (dto.Password.Length <= 8)
         {
             return BadRequest("you have to input 8 characaters at least!");
+        }
+
+        var exist = _context.Users.Any(i => i.UserName == dto.UserName);
+
+        if (exist == true)
+        {
+            return BadRequest("this username is already taken!");
         }
 
         var user = new User
@@ -41,3 +48,5 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 }
+    
+
