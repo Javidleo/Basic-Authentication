@@ -29,7 +29,7 @@ public class UserController : ControllerBase
             return BadRequest("you have to input 8 characaters at least!");
         }
 
-        var exist = _context.Users.Any(i => i.UserName == dto.UserName);
+        var exist = _context.Users.Any(i => i.UserName == dto.UserName); 
 
         if (exist == true)
         {
