@@ -1,10 +1,38 @@
 
 using BasicAuthentication.Domain;
 using BasicAuthentication.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Jwt Configurations start form herer.
+var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
+var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+       .AddJwtBearer(options =>
+       {
+           options.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateIssuer = true,
+               ValidateAudience = true,
+               ValidateLifetime = true,
+               ValidateIssuerSigningKey = true,
+               ValidIssuer = jwtIssuer,
+               ValidAudience = jwtIssuer,
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+           };
+       });
+//Jwt Configurations just finished after this need to use Authentication and 
+//Authorization down here after HttpRedirection and before MapControllers .
+
+
+
+
 
 
 // adding password service for regex security.
@@ -37,7 +65,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+// using authentication and authorization after registering jwt configurations.
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 
 app.MapControllers();
