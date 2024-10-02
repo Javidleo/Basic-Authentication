@@ -2,7 +2,6 @@
 using BasicAuthentication.Dto_s;
 using BasicAuthentication.Helper;
 using BasicAuthentication.Infrastructure;
-using BasicAuthentication.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -14,11 +13,9 @@ namespace BasicAuthentication.Controllers;
 public class UserController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly PasswordService _service;
-    public UserController(AppDbContext context, PasswordService service)
+    public UserController(AppDbContext context)
     {
         _context = context;
-        _service = service;
     }
     [Authorize]
     [HttpGet]
@@ -37,7 +34,7 @@ public class UserController : ControllerBase
     [HttpPost]
     public IActionResult RegisterUser([FromBody] UserDto dto)
     {
-        if (!_service.IsValidPassword(dto.Password))
+        if (!dto.IsValidPassword(dto.Password))
         {
             return BadRequest("Password is weak, it must be at least 8 characters, include numbers and special characters!");
         }
