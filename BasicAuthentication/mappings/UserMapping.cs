@@ -18,6 +18,8 @@ public class UserMapping : IEntityTypeConfiguration<User>
         builder.Property(i => i.Password)
             .IsRequired();
 
+        builder.Property(i => i.RefreshTokenExpirationTime);
+
         builder.Property(i => i.RefreshToken)
             .IsRequired(false);
     }

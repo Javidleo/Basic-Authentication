@@ -41,7 +41,8 @@ public class AuthController : ControllerBase
                 RefreshToken = refreshtoken
             };
             user.RefreshToken = refreshtoken;
-
+            user.RefreshTokenExpirationTime = DateTime.Now.AddDays(10);
+            
             _context.SaveChanges();
             
             return Ok(vm);
