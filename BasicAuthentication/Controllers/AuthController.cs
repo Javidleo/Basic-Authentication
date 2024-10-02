@@ -1,17 +1,18 @@
 ﻿using BasicAuthentication.Dto_s;
 using BasicAuthentication.Helper;
 using BasicAuthentication.Infrastructure;
+using BasicAuthentication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BasicAuthentication.Controllers;
 
 [Route("api/[Controller]")]
 [ApiController]
-public class JwtController : ControllerBase
+public class AuthController : ControllerBase
 {
     private IConfiguration _config;
     private readonly AppDbContext _context;
-    public JwtController(IConfiguration config, AppDbContext context)
+    public AuthController(IConfiguration config, AppDbContext context)
     {
         _config = config;
         _context = context;
@@ -32,7 +33,14 @@ public class JwtController : ControllerBase
                 _config["Jwt:Issuer"],
                 _config["Jwt:Audience"]);
 
-            return Ok(token);
+            var refreshtoken = JwtCreator.CreateRefreshToken(user.UserName);
+
+            TokenVm vm = new TokenVm()
+            {
+                AccessToken = token,
+                RefreshToken = refreshtoken
+            };
+            return Ok(vm);
         }
         else
         {
@@ -43,7 +51,10 @@ public class JwtController : ControllerBase
     public IActionResult GenerateRefreshToken(UserDto dto)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == dto.UserName);
-
+        if(user is null)
+        {
+            return NotFound("not found");
+        }
         var refreshToken = JwtCreator.CreateRefreshToken(user.UserName);
 
         return Ok(refreshToken);

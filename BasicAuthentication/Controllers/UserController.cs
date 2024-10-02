@@ -5,6 +5,7 @@ using BasicAuthentication.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace BasicAuthentication.Controllers;
 
@@ -13,13 +14,14 @@ namespace BasicAuthentication.Controllers;
 public class UserController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private const string PasswordPattern = @"^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$";
     public UserController(AppDbContext context)
     {
         _context = context;
     }
     [Authorize]
     [HttpGet]
-    public IActionResult GetProfile()
+    public IActionResult GetUserName()
     {
         var userName = JwtCreator.GetUserName(HttpContext.User);
 
@@ -34,7 +36,7 @@ public class UserController : ControllerBase
     [HttpPost]
     public IActionResult RegisterUser([FromBody] UserDto dto)
     {
-        if (!dto.IsValidPassword(dto.Password))
+        if (!IsValidPassword(dto.Password))
         {
             return BadRequest("Password is weak, it must be at least 8 characters, include numbers and special characters!");
         }
@@ -61,6 +63,12 @@ public class UserController : ControllerBase
         _context.SaveChanges();
 
         return Ok(user);
+    }
+
+    
+    private bool IsValidPassword(string password)
+    {
+        return Regex.IsMatch(password, PasswordPattern);
     }
 }
 

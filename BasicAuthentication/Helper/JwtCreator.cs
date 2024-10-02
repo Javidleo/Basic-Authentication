@@ -52,7 +52,7 @@ public class JwtCreator
     public static string CreateRefreshToken(
        string username)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SDLFkjsdfwoierudlfksfsdlkfj"));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SDLFkjsdfwoierudlfksfsdlkfj&sakjdflksjdaf"));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var expirationDate = DateTime.UtcNow.AddDays(10);

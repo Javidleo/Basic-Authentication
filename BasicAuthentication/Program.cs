@@ -1,5 +1,4 @@
 using BasicAuthentication.Infrastructure;
-using BasicAuthentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +35,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 // adding password service for regex security.
-builder.Services.AddScoped<PasswordService>();
 
 
 // Add services to the container.
