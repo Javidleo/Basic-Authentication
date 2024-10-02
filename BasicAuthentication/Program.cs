@@ -1,6 +1,5 @@
-
-using BasicAuthentication.Domain;
 using BasicAuthentication.Infrastructure;
+using BasicAuthentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Jwt Configurations start form herer.
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
+var jwtAudience = builder.Configuration.GetSection("Jwt:Audience").Get<string>();
 var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

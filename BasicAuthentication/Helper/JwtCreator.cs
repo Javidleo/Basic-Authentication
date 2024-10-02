@@ -1,12 +1,73 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using BasicAuthentication.Domain;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BasicAuthentication.JwtCreator;
+namespace BasicAuthentication.Helper;
 
 public class JwtCreator
 {
+    public static string GetUserName(ClaimsPrincipal user)
+    {
+        return user.FindFirstValue(ClaimTypes.NameIdentifier);
+    }
+    public static string CreateToken(string userName,
+        string signingKey,
+        DateTime expirationDate,
+        string issuer,
+        string audience)
+    {
+        // logic
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub,userName),
+            new Claim(JwtRegisteredClaimNames.Name,userName),
+            // this guarantees the token is unique
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        //if (additionalClaims is object)
+        //{
+        //    var claimList = new List<Claim>(claims);
+        //    claimList.AddRange(additionalClaims);
+        //    claims = claimList.ToArray();
+        //}
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var securityToken = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            expires: expirationDate,
+            claims: claims,
+            signingCredentials: creds
+        );
+
+        var token = new JwtSecurityTokenHandler().WriteToken(securityToken);
+        return token;
+    }
+
+    public static string CreateRefreshToken(
+       string username)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SDLFkjsdfwoierudlfksfsdlkfj"));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var expirationDate = DateTime.UtcNow.AddDays(10);
+
+        var refreshToken = new JwtSecurityToken(
+            issuer: "localhost",
+            audience: "localhost",
+            expires: expirationDate,
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(refreshToken);
+    }
+
+
+    // old
     public static ClaimsPrincipal GetDataFromExpiredToken(string token,
         string issuer,
         string audience,

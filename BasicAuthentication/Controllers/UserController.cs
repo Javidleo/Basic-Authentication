@@ -1,7 +1,11 @@
 ﻿using BasicAuthentication.Domain;
 using BasicAuthentication.Dto_s;
+using BasicAuthentication.Helper;
 using BasicAuthentication.Infrastructure;
+using BasicAuthentication.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BasicAuthentication.Controllers;
 
@@ -16,6 +20,20 @@ public class UserController : ControllerBase
         _context = context;
         _service = service;
     }
+    [Authorize]
+    [HttpGet]
+    public IActionResult GetProfile()
+    {
+        var userName = JwtCreator.GetUserName(HttpContext.User);
+
+        var userName2 = HttpContext.User.GetUserName();
+
+        var user = _context.Users.FirstOrDefault(i => i.UserName == userName);
+
+        return Ok(user);
+    }
+
+
     [HttpPost]
     public IActionResult RegisterUser([FromBody] UserDto dto)
     {
@@ -29,7 +47,7 @@ public class UserController : ControllerBase
             return BadRequest("you have to input 8 characaters at least!");
         }
 
-        var exist = _context.Users.Any(i => i.UserName == dto.UserName); 
+        var exist = _context.Users.Any(i => i.UserName == dto.UserName);
 
         if (exist == true)
         {
@@ -48,5 +66,5 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 }
-    
+
 

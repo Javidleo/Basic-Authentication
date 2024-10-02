@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace BasicAuthentication.Domain;
+namespace BasicAuthentication.Services;
 
 public class PasswordService
 {
