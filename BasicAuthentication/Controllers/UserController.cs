@@ -64,7 +64,6 @@ public class UserController : ControllerBase
 
         return Ok(user);
     }
-
     
     private bool IsValidPassword(string password)
     {

@@ -25,7 +25,7 @@ public class AuthController : ControllerBase
         if (user is null)
             return NotFound("user notfound");
 
-        if(user.Password == dto.Password)
+        if (user.Password == dto.Password)
         {
             var token = JwtCreator.CreateToken(user.UserName,
                 _config["Jwt:Key"],
@@ -40,6 +40,10 @@ public class AuthController : ControllerBase
                 AccessToken = token,
                 RefreshToken = refreshtoken
             };
+            user.RefreshToken = refreshtoken;
+
+            _context.SaveChanges();
+            
             return Ok(vm);
         }
         else
@@ -47,11 +51,12 @@ public class AuthController : ControllerBase
             return BadRequest("invalid credentials");
         }
     }
+
     [HttpPost("refresh-token")]
     public IActionResult GenerateRefreshToken(UserDto dto)
     {
         var user = _context.Users.FirstOrDefault(u => u.UserName == dto.UserName);
-        if(user is null)
+        if (user is null)
         {
             return NotFound("not found");
         }
